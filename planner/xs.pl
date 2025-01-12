@@ -7,7 +7,7 @@ load_module('Dist::Build::XS');
 load_module('Dist::Build::XS::Conf');
 
 my @possibilities = (
-	[ 'getrandom in sys/random.h', 'NATIVE_GETRANDOM', <<EOF ],
+	[ 'getrandom in sys/random.h', 'SYS_RANDOM_GETRANDOM', <<EOF ],
 #include <sys/types.h>
 #include <sys/random.h>
 
@@ -30,7 +30,7 @@ int main(void)
         return 0;
 }
 EOF
-	['getentropy in sys/random.h', 'NATIVE_GETENTROPY', <<EOF ],
+	['getentropy in sys/random.h', 'SYS_RANDOM_GETENTROPY', <<EOF ],
 #include <sys/types.h>
 #include <sys/random.h>
 
