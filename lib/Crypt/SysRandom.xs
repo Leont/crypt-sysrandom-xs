@@ -11,14 +11,18 @@
 
 #if defined(HAVE_NATIVE_GETENTROPY)
 #include <sys/random.h>
+
 #elif defined(HAVE_UNISTD_GETENTROPY)
 #include <unistd.h>
+
 #elif defined(HAVE_NATIVE_GETRANDOM)
 #include <sys/random.h>
+
 #elif defined(HAVE_SYSCALL_GETRANDOM)
 #include <sys/syscall.h>
 #include <unistd.h>
 #define getrandom(data, length, flags) syscall(SYS_getrandom, data, length, flags)
+
 #elif defined(HAVE_BCRYPT_GENRANDOM)
 #define WIN32_NO_STATUS
 #include <windows.h>
@@ -27,6 +31,7 @@
 #include <winternl.h>
 #include <ntstatus.h>
 #include <bcrypt.h>
+
 #else
 #error "No suitable implementation found"
 #endif
