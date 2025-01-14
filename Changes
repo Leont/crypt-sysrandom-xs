@@ -1,6 +1,7 @@
 Revision history for Crypt-SysRandom
 
 {{$NEXT}}
+          - Link to Bcrypt.dll on Windows
 
 0.003     2025-01-14 13:18:37+01:00 Europe/Brussels
           - Fix typo in Windows feature check
