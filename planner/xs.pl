@@ -63,7 +63,7 @@ EOF
 int main(void)
 {
         char buf[16];
-        int r = BCryptGenRandom(NULL, buf, sizeof(bug), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+        int r = BCryptGenRandom(NULL, buf, sizeof(buf), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
         return 0;
 }
 EOF
