@@ -36,7 +36,7 @@
 #error "No suitable implementation found"
 #endif
 
-static const char error_string[] = "Could not fetch random bytes(wanted %zu, got %zu)";
+static const char error_string[] = "Could not read random bytes";
 
 MODULE = Crypt::SysRandom				PACKAGE = Crypt::SysRandom
 
@@ -52,13 +52,13 @@ SV* random_bytes(size_t wanted)
 		int result = getentropy(data, wanted);
 		if (result < 0) {
 			SvREFCNT_dec(RETVAL);
-			croak(error_string, wanted, 0);
+			croak(error_string);
 		}
 #elif defined(HAVE_BCRYPT_GENRANDOM)
 		NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
 		if (!NT_SUCCESS(status)) {
 			SvREFCNT_dec(RETVAL);
-			croak(error_string, wanted, 0);
+			croak(error_string);
 		}
 #else
 		size_t received = 0;
@@ -67,11 +67,9 @@ SV* random_bytes(size_t wanted)
 			int result = getrandom(data, length, 0);
 			if (result == -1 && errno == EINTR) {
 				PERL_ASYNC_CHECK();
-				continue;
-			}
-			else if (result == -1 || result == 0) {
+			} else if (result == -1 || result == 0) {
 				SvREFCNT_dec(RETVAL);
-				croak(error_string, wanted, received);
+				croak(error_string);
 			} else {
 				received += result;
 				data += result;
