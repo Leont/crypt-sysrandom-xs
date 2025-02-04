@@ -5,7 +5,7 @@ use warnings;
 
 use Test::More;
 
-use Crypt::SysRandom 'random_bytes';
+use Crypt::SysRandom::XS 'random_bytes';
 
 my $first = random_bytes(16);
 

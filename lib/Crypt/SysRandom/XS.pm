@@ -1,4 +1,4 @@
-package Crypt::SysRandom;
+package Crypt::SysRandom::XS;
 
 use strict;
 use warnings;
@@ -12,11 +12,11 @@ our @EXPORT_OK = 'random_bytes';
 
 1;
 
-# ABSTRACT: Perl interface to system randomness
+# ABSTRACT: Perl interface to system randomness, XS version
 
 =head1 SYNOPSIS
 
- use Crypt::SysRandom 'random_bytes';
+ use Crypt::SysRandom::XS 'random_bytes';
  my $random = random_bytes(16);
 
 =head1 DESCRIPTION

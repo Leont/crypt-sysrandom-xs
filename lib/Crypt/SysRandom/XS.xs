@@ -38,7 +38,7 @@
 
 static const char error_string[] = "Could not read random bytes";
 
-MODULE = Crypt::SysRandom				PACKAGE = Crypt::SysRandom
+MODULE = Crypt::SysRandom::XS				PACKAGE = Crypt::SysRandom::XS
 
 PROTOTYPES: DISABLED
 

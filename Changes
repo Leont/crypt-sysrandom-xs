@@ -1,6 +1,7 @@
-Revision history for Crypt-SysRandom
+Revision history for Crypt-SysRandom-XS
 
 {{$NEXT}}
+          - Rename to Crypt::SysRandom::XS
           - Simplify error message
 
 0.005     2025-01-15 14:25:11+01:00 Europe/Brussels
