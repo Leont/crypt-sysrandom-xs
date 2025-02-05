@@ -69,6 +69,26 @@ int main(void)
         return 0;
 }
 EOF
+	[ 'rdrandom64 in immintrin.h', 'RDRAND64', { run => 0, extra_compiler_flags => [ '-mrdrnd' ] }, <<EOF ],
+#include <immintrin.h>
+
+int main(void) {
+	char buf[16];
+	int i;
+	for (i = 0; i < sizeof buf; i+= sizeof(unsigned long long))
+		_rdrand64_step((unsigned long long*)(buf + i));
+}
+EOF
+	[ 'rdrandom32 in immintrin.h', 'RDRAND32', { run => 0, extra_compiler_flags => [ '-mrdrnd' ] }, <<EOF ],
+#include <immintrin.h>
+
+int main(void) {
+	char buf[16];
+	int i;
+	for (i = 0; i < sizeof buf; i+= sizeof(unsigned long))
+		_rdrand32_step((unsigned *)(buf + i));
+}
+EOF
 );
 
 for my $possibility (@possibilities) {
