@@ -1,6 +1,7 @@
 Revision history for Crypt-SysRandom-XS
 
 {{$NEXT}}
+          - Correctly set ending nullbyte in rdrand64 code
 
 0.007     2025-02-05 20:45:53+01:00 Europe/Brussels
           - Add RDRAND support as final fallback
