@@ -25,4 +25,4 @@ This module uses whatever C interface is available to procure cryptographically 
 
 =func random_bytes($count)
 
-This will fetch a string of C<$count> random bytes containing cryptographically secure random date.
+This will fetch a string of C<$count> random bytes containing cryptographically secure random data.
