@@ -26,3 +26,31 @@ This module uses whatever C interface is available to procure cryptographically 
 =func random_bytes($count)
 
 This will fetch a string of C<$count> random bytes containing cryptographically secure random data.
+
+=head1 BACKENDS
+
+At build-time, it will try the following backends in order:
+
+=over 4
+
+=item * getrandom
+
+This backend is available on Linux, FreeBSD and Solaris
+
+=item * arc4random
+
+This interface is supported on most BSDs.
+
+=item * BCryptGenRandom
+
+This backend is available on Windows (Vista and newer)
+
+=item * rdrand64
+
+This is available on C<x86_64> architectures using most compilers.
+
+=item * rdrand32
+
+This is available on C<x86_64> and C<x86> architectures using most compilers.
+
+=back
