@@ -4,6 +4,7 @@
 #define PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"
+#define NO_XSLOCKS
 #include "XSUB.h"
 
 #include <sys/types.h>
@@ -85,7 +86,16 @@ SV* random_bytes(size_t wanted)
 			size_t length = wanted - received;
 			int result = getrandom(data, length, 0);
 			if (result == -1 && errno == EINTR) {
-				PERL_ASYNC_CHECK();
+				dXCPT;
+
+				XCPT_TRY_START {
+					PERL_ASYNC_CHECK();
+				} XCPT_TRY_END;
+
+				XCPT_CATCH {
+					SvREFCNT_dec(RETVAL);
+					XCPT_RETHROW;
+				}
 			} else if (result == -1 || result == 0) {
 				SvREFCNT_dec(RETVAL);
 				croak(error_string);
