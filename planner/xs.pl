@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-load_module('Dist::Build::XS');
-load_module('Dist::Build::XS::Conf');
+load_extension('Dist::Build::XS');
+load_extension('Dist::Build::XS::Conf');
 
 my %options;
 
