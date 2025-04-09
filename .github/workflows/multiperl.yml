@@ -73,21 +73,9 @@ jobs:
       - name: Build
         working-directory: ./Dist-To-Test
         run: ./Build build
-#      - name: Install yath
-#        run: cpanm --notest Test::Harnes Test2::Harness Test2::Harness::Renderer::JUnit
       - name: Test
         working-directory: ./Dist-To-Test
         run: ./Build test
-#      - name: Run the tests
-#        working-directory: ./Dist-To-Test
-#        run: |
-#          JUNIT_TEST_FILE="/tmp/test-output.xml" ALLOW_PASSING_TODOS=1 yath test --renderer=Formatter --renderer=JUnit -D
-#      - name: Publish test report
-#        uses: mikepenz/action-junit-report@v4
-#        if: always() # always run even if the previous step fails
-#        with:
-#          check_name: JUnit Report (${{ matrix.perl-version }})
-#          report_paths: /tmp/test-output.xml
 
   macos-test:
     needs: build-tarball
@@ -115,8 +103,6 @@ jobs:
       - name: Build
         working-directory: ./Dist-To-Test
         run: ./Build build
-#      - name: Install yath
-#        run: cpanm --notest Test::Harnes Test2::Harness Test2::Harness::Renderer::JUnit
       - name: Test
         working-directory: ./Dist-To-Test
         run: ./Build test
@@ -147,8 +133,6 @@ jobs:
       - name: Build
         working-directory: ./Dist-To-Test
         run: ./Build build
-#      - name: Install yath
-#        run: cpanm --notest Test::Harnes Test2::Harness Test2::Harness::Renderer::JUnit
       - name: Test
         working-directory: ./Dist-To-Test
         run: ./Build test
