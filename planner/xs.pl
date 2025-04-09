@@ -32,6 +32,26 @@ int main(void)
         return 0;
 }
 EOF
+	['arc4random in sys/random.h', 'SYS_RANDOM_ARC4RANDOM', {}, <<EOF ],
+#include <sys/random.h>
+
+int main(void)
+{
+        char buf[16];
+        arc4random_buf(buf, sizeof(buf));
+        return 0;
+}
+EOF
+	['arc4random in unistd.h', 'UNISTD_ARC4RANDOM', {}, <<EOF ],
+#include <unistd.h>
+
+int main(void)
+{
+        char buf[16];
+        arc4random_buf(buf, sizeof(buf));
+        return 0;
+}
+EOF
 	['Microsoft BcryptGenRandom', 'BCRYPT_GENRANDOM', { libraries => ['Bcrypt'] }, <<EOF ],
 #define WIN32_NO_STATUS
 #include <windows.h>
