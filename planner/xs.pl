@@ -32,27 +32,6 @@ int main(void)
         return 0;
 }
 EOF
-	['getentropy in sys/random.h', 'SYS_RANDOM_GETENTROPY', {}, <<EOF ],
-#include <sys/types.h>
-#include <sys/random.h>
-
-int main(void)
-{
-        char buf[16];
-        int r = getentropy(buf, sizeof(buf));
-        return 0;
-}
-EOF
-	['getentropy in unistd.h', 'UNISTD_GETENTROPY', {}, <<EOF ],
-#include <unistd.h>
-
-int main(void)
-{
-        char buf[16];
-        int r = getentropy(buf, sizeof(buf));
-        return 0;
-}
-EOF
 	['Microsoft BcryptGenRandom', 'BCRYPT_GENRANDOM', { libraries => ['Bcrypt'] }, <<EOF ],
 #define WIN32_NO_STATUS
 #include <windows.h>
