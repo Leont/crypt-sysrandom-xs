@@ -10,13 +10,19 @@
 #include <sys/types.h>
 #include <errno.h>
 
-#if defined(HAVE_SYS_RANDOM_GETRANDOM)
+#if defined(HAVE_SYS_RANDOM_GETRANDOM) || defined(HAVE_SYS_RANDOM_ARC4RANDOM)
 #include <sys/random.h>
 
 #elif defined(HAVE_SYSCALL_GETRANDOM)
 #include <sys/syscall.h>
 #include <unistd.h>
 #define getrandom(data, length, flags) syscall(SYS_getrandom, data, length, flags)
+
+#elif defined(HAVE_UNISTD_ARC4RANDOM)
+#include <unistd.h>
+
+#elif defined(HAVE_STDLIB_ARC4RANDOM)
+#include <stdlib.h>
 
 #elif defined(HAVE_BCRYPT_GENRANDOM)
 #define WIN32_NO_STATUS
@@ -52,6 +58,8 @@ SV* random_bytes(size_t wanted)
 			SvREFCNT_dec(RETVAL);
 			croak(error_string);
 		}
+#elif defined(HAVE_SYS_RANDOM_ARC4RANDOM) || defined(HAVE_UNISTD_ARC4RANDOM) || defined(HAVE_STDLIB_ARC4RANDOM)
+		arc4random_buf(data, wanted);
 #elif defined(HAVE_RDRAND64)
 		if (wanted % 8)
 			SvGROW(RETVAL, wanted + (8 - (wanted % 8)) + 1);
