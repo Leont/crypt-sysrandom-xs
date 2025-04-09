@@ -10,13 +10,7 @@
 #include <sys/types.h>
 #include <errno.h>
 
-#if defined(HAVE_SYS_RANDOM_GETENTROPY)
-#include <sys/random.h>
-
-#elif defined(HAVE_UNISTD_GETENTROPY)
-#include <unistd.h>
-
-#elif defined(HAVE_SYS_RANDOM_GETRANDOM)
+#if defined(HAVE_SYS_RANDOM_GETRANDOM)
 #include <sys/random.h>
 
 #elif defined(HAVE_SYSCALL_GETRANDOM)
@@ -52,13 +46,7 @@ SV* random_bytes(size_t wanted)
 		SvGROW(RETVAL, wanted + 1);
 		SvCUR_set(RETVAL, wanted);
 		char* data = SvPVX(RETVAL);
-#if defined(HAVE_SYS_RANDOM_GETENTROPY) || defined(HAVE_UNISTD_GETENTROPY)
-		int result = getentropy(data, wanted);
-		if (result < 0) {
-			SvREFCNT_dec(RETVAL);
-			croak(error_string);
-		}
-#elif defined(HAVE_BCRYPT_GENRANDOM)
+#if defined(HAVE_BCRYPT_GENRANDOM)
 		NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
 		if (!NT_SUCCESS(status)) {
 			SvREFCNT_dec(RETVAL);
