@@ -37,9 +37,9 @@ At build-time, it will try the following backends in order:
 
 This backend is available on Linux, FreeBSD and Solaris
 
-=item * getentropy
+=item * arc4random
 
-This backend is standardized in POSIX and is available on most modern unixes
+This interface is supported on most BSDs and Mac.
 
 =item * BCryptGenRandom
 

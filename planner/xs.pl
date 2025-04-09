@@ -32,24 +32,34 @@ int main(void)
         return 0;
 }
 EOF
-	['getentropy in sys/random.h', 'SYS_RANDOM_GETENTROPY', {}, <<EOF ],
+	['arc4random in sys/random.h', 'SYS_RANDOM_ARC4RANDOM', {}, <<EOF ],
 #include <sys/types.h>
 #include <sys/random.h>
 
 int main(void)
 {
         char buf[16];
-        int r = getentropy(buf, sizeof(buf));
+        arc4random_buf(buf, sizeof(buf));
         return 0;
 }
 EOF
-	['getentropy in unistd.h', 'UNISTD_GETENTROPY', {}, <<EOF ],
+	['arc4random in unistd.h', 'UNISTD_ARC4RANDOM', {}, <<EOF ],
 #include <unistd.h>
 
 int main(void)
 {
         char buf[16];
-        int r = getentropy(buf, sizeof(buf));
+        arc4random_buf(buf, sizeof(buf));
+        return 0;
+}
+EOF
+	['arc4random in stdlib.h', 'STDLIB_ARC4RANDOM', {}, <<EOF ],
+#include <stdlib.h>
+
+int main(void)
+{
+        char buf[16];
+        arc4random_buf(buf, sizeof(buf));
         return 0;
 }
 EOF

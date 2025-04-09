@@ -10,19 +10,19 @@
 #include <sys/types.h>
 #include <errno.h>
 
-#if defined(HAVE_SYS_RANDOM_GETENTROPY)
-#include <sys/random.h>
-
-#elif defined(HAVE_UNISTD_GETENTROPY)
-#include <unistd.h>
-
-#elif defined(HAVE_SYS_RANDOM_GETRANDOM)
+#if defined(HAVE_SYS_RANDOM_GETRANDOM) || defined(HAVE_SYS_RANDOM_ARC4RANDOM)
 #include <sys/random.h>
 
 #elif defined(HAVE_SYSCALL_GETRANDOM)
 #include <sys/syscall.h>
 #include <unistd.h>
 #define getrandom(data, length, flags) syscall(SYS_getrandom, data, length, flags)
+
+#elif defined(HAVE_UNISTD_ARC4RANDOM)
+#include <unistd.h>
+
+#elif defined(HAVE_STDLIB_ARC4RANDOM)
+#include <stdlib.h>
 
 #elif defined(HAVE_BCRYPT_GENRANDOM)
 #define WIN32_NO_STATUS
@@ -52,18 +52,14 @@ SV* random_bytes(size_t wanted)
 		SvGROW(RETVAL, wanted + 1);
 		SvCUR_set(RETVAL, wanted);
 		char* data = SvPVX(RETVAL);
-#if defined(HAVE_SYS_RANDOM_GETENTROPY) || defined(HAVE_UNISTD_GETENTROPY)
-		int result = getentropy(data, wanted);
-		if (result < 0) {
-			SvREFCNT_dec(RETVAL);
-			croak(error_string);
-		}
-#elif defined(HAVE_BCRYPT_GENRANDOM)
+#if defined(HAVE_BCRYPT_GENRANDOM)
 		NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
 		if (!NT_SUCCESS(status)) {
 			SvREFCNT_dec(RETVAL);
 			croak(error_string);
 		}
+#elif defined(HAVE_SYS_RANDOM_ARC4RANDOM) || defined(HAVE_UNISTD_ARC4RANDOM) || defined(HAVE_STDLIB_ARC4RANDOM)
+		arc4random_buf(data, wanted);
 #elif defined(HAVE_RDRAND64)
 		if (wanted % 8)
 			SvGROW(RETVAL, wanted + (8 - (wanted % 8)) + 1);
