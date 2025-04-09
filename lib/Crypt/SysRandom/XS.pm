@@ -37,6 +37,10 @@ At build-time, it will try the following backends in order:
 
 This backend is available on Linux, FreeBSD and Solaris
 
+=item * arc4random
+
+This interface is supported on most BSDs and Mac.
+
 =item * BCryptGenRandom
 
 This backend is available on Windows (Vista and newer)
