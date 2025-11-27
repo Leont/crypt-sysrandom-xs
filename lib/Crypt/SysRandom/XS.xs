@@ -44,7 +44,7 @@ static const char error_string[] = "Could not read random bytes";
 
 MODULE = Crypt::SysRandom::XS				PACKAGE = Crypt::SysRandom::XS
 
-PROTOTYPES: DISABLED
+PROTOTYPES: DISABLE
 
 SV* random_bytes(size_t wanted)
 	CODE:
