@@ -53,7 +53,6 @@ SV* random_bytes(long wanted)
 
 		RETVAL = newSVpv("", 0);
 		char* data = SvGROW(RETVAL, wanted + 1);
-		SvCUR_set(RETVAL, wanted);
 #if defined(HAVE_BCRYPT_GENRANDOM)
 		NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
 		if (!NT_SUCCESS(status)) {
@@ -68,21 +67,16 @@ SV* random_bytes(long wanted)
 		int i;
 		for (i = 0; i < wanted; i += 8)
 			_rdrand64_step((unsigned long long*)(data + i));
-		if (wanted % 8)
-			data[wanted] = '\0';
 #elif defined(HAVE_RDRAND32)
 		if (wanted % 4)
 			data = SvGROW(RETVAL, wanted + (4 - (wanted % 4)) + 1);
 		int i;
 		for (i = 0; i < wanted; i += 4)
 			_rdrand32_step((unsigned*)(data + i));
-		if (wanted % 4)
-			data[wanted] = '\0';
 #else
 		size_t received = 0;
 		while (received < wanted) {
-			size_t length = wanted - received;
-			int result = getrandom(data, length, 0);
+			int result = getrandom(data + received, wanted - received, 0);
 			if (result == -1 && errno == EINTR) {
 				dXCPT;
 
@@ -99,9 +93,10 @@ SV* random_bytes(long wanted)
 				croak(error_string);
 			} else {
 				received += result;
-				data += result;
 			}
 		}
 #endif
+		SvCUR_set(RETVAL, wanted);
+		data[wanted] = '\0';
 	OUTPUT:
 		RETVAL

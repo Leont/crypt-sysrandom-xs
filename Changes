@@ -2,6 +2,7 @@ Revision history for Crypt-SysRandom-XS
 
 {{$NEXT}}
           - Update data pointer on resize for rdrand
+          - Clean up string length handling
 
 0.010     2026-02-16 21:42:29+01:00 Europe/Brussels
           - Disallow requesting strings with negative lengths CVE-2026-2597
