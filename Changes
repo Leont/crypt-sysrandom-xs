@@ -1,6 +1,8 @@
 Revision history for Crypt-SysRandom-XS
 
 {{$NEXT}}
+
+0.011     2026-02-17 00:58:43+01:00 Europe/Brussels
           - Update data pointer on resize for rdrand
           - Clean up string length handling
 
