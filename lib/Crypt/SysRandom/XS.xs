@@ -52,9 +52,8 @@ SV* random_bytes(long wanted)
 			croak("Invalid length %ld", wanted);
 
 		RETVAL = newSVpv("", 0);
-		SvGROW(RETVAL, wanted + 1);
+		char* data = SvGROW(RETVAL, wanted + 1);
 		SvCUR_set(RETVAL, wanted);
-		char* data = SvPVX(RETVAL);
 #if defined(HAVE_BCRYPT_GENRANDOM)
 		NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
 		if (!NT_SUCCESS(status)) {
@@ -65,7 +64,7 @@ SV* random_bytes(long wanted)
 		arc4random_buf(data, wanted);
 #elif defined(HAVE_RDRAND64)
 		if (wanted % 8)
-			SvGROW(RETVAL, wanted + (8 - (wanted % 8)) + 1);
+			data = SvGROW(RETVAL, wanted + (8 - (wanted % 8)) + 1);
 		int i;
 		for (i = 0; i < wanted; i += 8)
 			_rdrand64_step((unsigned long long*)(data + i));
@@ -73,7 +72,7 @@ SV* random_bytes(long wanted)
 			data[wanted] = '\0';
 #elif defined(HAVE_RDRAND32)
 		if (wanted % 4)
-			SvGROW(RETVAL, wanted + (4 - (wanted % 4)) + 1);
+			data = SvGROW(RETVAL, wanted + (4 - (wanted % 4)) + 1);
 		int i;
 		for (i = 0; i < wanted; i += 4)
 			_rdrand32_step((unsigned*)(data + i));
