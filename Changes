@@ -1,6 +1,7 @@
 Revision history for Crypt-SysRandom-XS
 
 {{$NEXT}}
+          - Disallow requesting strings with negative lengths CVE-2026-2597
           - Try arc4random in stdlib.h first
           - Correct value of PROTOTYPES keyword in XS
 

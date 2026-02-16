@@ -46,8 +46,11 @@ MODULE = Crypt::SysRandom::XS				PACKAGE = Crypt::SysRandom::XS
 
 PROTOTYPES: DISABLE
 
-SV* random_bytes(size_t wanted)
+SV* random_bytes(long wanted)
 	CODE:
+		if (wanted < 0)
+			croak("Invalid length %ld", wanted);
+
 		RETVAL = newSVpv("", 0);
 		SvGROW(RETVAL, wanted + 1);
 		SvCUR_set(RETVAL, wanted);
