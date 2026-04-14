@@ -42,61 +42,64 @@
 
 static const char error_string[] = "Could not read random bytes";
 
+SV* S_random_bytes(pTHX_ long wanted) {
+	if (wanted < 0)
+		croak("Invalid length %ld", wanted);
+
+	SV* RETVAL = newSVpv("", 0);
+	char* data = SvGROW(RETVAL, (size_t)wanted + 1);
+#if defined(HAVE_BCRYPT_GENRANDOM)
+	NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+	if (!NT_SUCCESS(status)) {
+		SvREFCNT_dec(RETVAL);
+		croak(error_string);
+	}
+#elif defined(HAVE_SYS_RANDOM_ARC4RANDOM) || defined(HAVE_UNISTD_ARC4RANDOM) || defined(HAVE_STDLIB_ARC4RANDOM)
+	arc4random_buf(data, wanted);
+#elif defined(HAVE_RDRAND64)
+	if (wanted % 8)
+		data = SvGROW(RETVAL, wanted + (8 - (wanted % 8)) + 1);
+	int i;
+	for (i = 0; i < wanted; i += 8)
+		_rdrand64_step((unsigned long long*)(data + i));
+#elif defined(HAVE_RDRAND32)
+	if (wanted % 4)
+		data = SvGROW(RETVAL, wanted + (4 - (wanted % 4)) + 1);
+	int i;
+	for (i = 0; i < wanted; i += 4)
+		_rdrand32_step((unsigned*)(data + i));
+#else
+	size_t received = 0;
+	while (received < (size_t)wanted) {
+		int result = getrandom(data + received, wanted - received, 0);
+		if (result == -1 && errno == EINTR) {
+			dXCPT;
+
+			XCPT_TRY_START {
+				PERL_ASYNC_CHECK();
+			} XCPT_TRY_END;
+
+			XCPT_CATCH {
+				SvREFCNT_dec(RETVAL);
+				XCPT_RETHROW;
+			}
+		} else if (result == -1 || result == 0) {
+			SvREFCNT_dec(RETVAL);
+			croak(error_string);
+		} else {
+			received += result;
+		}
+	}
+#endif
+	SvCUR_set(RETVAL, wanted);
+	data[wanted] = '\0';
+
+	return RETVAL;
+}
+#define random_bytes(length) S_random_bytes(aTHX_ length)
+
 MODULE = Crypt::SysRandom::XS				PACKAGE = Crypt::SysRandom::XS
 
 PROTOTYPES: DISABLE
 
 SV* random_bytes(long wanted)
-	CODE:
-		if (wanted < 0)
-			croak("Invalid length %ld", wanted);
-
-		RETVAL = newSVpv("", 0);
-		char* data = SvGROW(RETVAL, wanted + 1);
-#if defined(HAVE_BCRYPT_GENRANDOM)
-		NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
-		if (!NT_SUCCESS(status)) {
-			SvREFCNT_dec(RETVAL);
-			croak(error_string);
-		}
-#elif defined(HAVE_SYS_RANDOM_ARC4RANDOM) || defined(HAVE_UNISTD_ARC4RANDOM) || defined(HAVE_STDLIB_ARC4RANDOM)
-		arc4random_buf(data, wanted);
-#elif defined(HAVE_RDRAND64)
-		if (wanted % 8)
-			data = SvGROW(RETVAL, wanted + (8 - (wanted % 8)) + 1);
-		int i;
-		for (i = 0; i < wanted; i += 8)
-			_rdrand64_step((unsigned long long*)(data + i));
-#elif defined(HAVE_RDRAND32)
-		if (wanted % 4)
-			data = SvGROW(RETVAL, wanted + (4 - (wanted % 4)) + 1);
-		int i;
-		for (i = 0; i < wanted; i += 4)
-			_rdrand32_step((unsigned*)(data + i));
-#else
-		size_t received = 0;
-		while (received < wanted) {
-			int result = getrandom(data + received, wanted - received, 0);
-			if (result == -1 && errno == EINTR) {
-				dXCPT;
-
-				XCPT_TRY_START {
-					PERL_ASYNC_CHECK();
-				} XCPT_TRY_END;
-
-				XCPT_CATCH {
-					SvREFCNT_dec(RETVAL);
-					XCPT_RETHROW;
-				}
-			} else if (result == -1 || result == 0) {
-				SvREFCNT_dec(RETVAL);
-				croak(error_string);
-			} else {
-				received += result;
-			}
-		}
-#endif
-		SvCUR_set(RETVAL, wanted);
-		data[wanted] = '\0';
-	OUTPUT:
-		RETVAL
