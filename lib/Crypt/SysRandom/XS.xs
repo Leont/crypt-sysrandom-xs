@@ -6,6 +6,7 @@
 #include "perl.h"
 #define NO_XSLOCKS
 #include "XSUB.h"
+#include "ppport.h"
 
 #include <sys/types.h>
 #include <errno.h>
