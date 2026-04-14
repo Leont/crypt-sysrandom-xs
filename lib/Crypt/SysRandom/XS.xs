@@ -120,6 +120,31 @@ static const XOP random_bytes_xop = {
 	.xop_class = OA_UNOP,
 };
 
+static OP* pp_random_bytes_fixed_size(pTHX) {
+	dSP;
+	SV* result = random_bytes(cUNOP_AUX->op_aux->iv);
+	mXPUSHs(result);
+	RETURN;
+}
+
+#ifdef XOPf_xop_dump
+static void random_bytes_fixed_size_xop_dump(pTHX_ const OP *o, struct Perl_OpDumpContext *ctx) {
+	opdump_printf(ctx, "WANTED = %" IVdf "\n", cUNOP_AUXx(o)->op_aux->iv);
+}
+#else
+#define XOPf_xop_dump 0
+#endif
+
+static const XOP random_bytes_fixed_size_xop = {
+	.xop_flags = XOPf_xop_name | XOPf_xop_desc | XOPf_xop_class | XOPf_xop_dump,
+	.xop_name  = "random_bytes_fixed_size",
+	.xop_desc  = "random_bytes retrieval (constant length argument)",
+	.xop_class = OA_UNOP,
+#if XOPf_xop_dump
+	.xop_dump  = &random_bytes_fixed_size_xop_dump,
+#endif
+};
+
 static OP* random_bytes_call_checker(pTHX_ OP *entersubop, GV *namegv, SV *ckobj) {
 	OP* pushop = cLISTOPx(entersubop)->op_first;
 	if (!pushop)
@@ -132,9 +157,6 @@ static OP* random_bytes_call_checker(pTHX_ OP *entersubop, GV *namegv, SV *ckobj
 	if (!argop)
 		return entersubop;
 
-	if (argop->op_type != OP_CONST && argop->op_type != OP_PADSV && argop->op_type != OP_GVSV)
-		return entersubop;
-
 	OP* nextop = OpSIBLING(argop);
 	if (!nextop || nextop->op_type != OP_NULL)
 		return entersubop;
@@ -142,12 +164,24 @@ static OP* random_bytes_call_checker(pTHX_ OP *entersubop, GV *namegv, SV *ckobj
 	if (OpSIBLING(nextop))
 		return entersubop;
 
-	OpMORESIB_set(pushop, nextop);
-	OpLASTSIB_set(argop, NULL);
-	OP* newop = newUNOP(OP_CUSTOM, 0, argop);
-	newop->op_ppaddr = pp_random_bytes;
-	op_free(entersubop);
-	return newop;
+	if (argop->op_type == OP_CONST) {
+		SVOP* const_op = cSVOPx(argop);
+		SV* wanted = const_op->op_sv;
+		UNOP_AUX_item* item = safemalloc(sizeof(UNOP_AUX_item));
+		item->iv = SvIV(wanted);
+		OP* newop = newUNOP_AUX(OP_CUSTOM, 0, NULL, item);
+		newop->op_ppaddr = pp_random_bytes_fixed_size;
+		op_free(entersubop);
+		return newop;
+	} else if (argop->op_type == OP_PADSV || argop->op_type == OP_GVSV) {
+		OpMORESIB_set(pushop, nextop);
+		OpLASTSIB_set(argop, NULL);
+		OP* newop = newUNOP(OP_CUSTOM, 0, argop);
+		newop->op_ppaddr = pp_random_bytes;
+		op_free(entersubop);
+		return newop;
+	} else
+		return entersubop;
 }
 
 #endif
@@ -162,6 +196,7 @@ BOOT:
 #if PERL_VERSION >= 22
 {
 	custom_op_register(pp_random_bytes, &random_bytes_xop);
+	custom_op_register(pp_random_bytes_fixed_size, &random_bytes_fixed_size_xop);
 	CV* random_bytes_cv = get_cv("Crypt::SysRandom::XS::random_bytes", 0);
 	cv_set_call_checker(random_bytes_cv, random_bytes_call_checker, (SV*)random_bytes_cv);
 }
