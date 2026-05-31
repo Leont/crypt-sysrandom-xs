@@ -1,6 +1,8 @@
 Revision history for Crypt-SysRandom-XS
 
 {{$NEXT}}
+
+0.012     2026-05-31 20:17:22+02:00 Europe/Brussels (TRIAL RELEASE)
           - Use BCRYPT_RNG_ALG_HANDLE in Windows code path
 
 0.011     2026-02-17 00:58:43+01:00 Europe/Brussels
