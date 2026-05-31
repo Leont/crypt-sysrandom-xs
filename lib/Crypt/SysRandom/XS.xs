@@ -54,7 +54,7 @@ SV* random_bytes(long wanted)
 		RETVAL = newSVpv("", 0);
 		char* data = SvGROW(RETVAL, wanted + 1);
 #if defined(HAVE_BCRYPT_GENRANDOM)
-		NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+		NTSTATUS status = BCryptGenRandom(BCRYPT_RNG_ALG_HANDLE, data, wanted, 0);
 		if (!NT_SUCCESS(status)) {
 			SvREFCNT_dec(RETVAL);
 			croak(error_string);
