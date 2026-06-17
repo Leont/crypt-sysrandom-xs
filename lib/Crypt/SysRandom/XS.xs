@@ -33,6 +33,9 @@
 #include <ntstatus.h>
 #include <bcrypt.h>
 
+#elif defined(HAVE_RTL_GENRANDOM)
+BOOLEAN WINAPI SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength);
+
 #elif defined(HAVE_RDRAND32) || defined(HAVE_RDRAND64)
 #include <immintrin.h>
 
@@ -56,6 +59,12 @@ SV* random_bytes(long wanted)
 #if defined(HAVE_BCRYPT_GENRANDOM)
 		NTSTATUS status = BCryptGenRandom(NULL, data, wanted, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
 		if (!NT_SUCCESS(status)) {
+			SvREFCNT_dec(RETVAL);
+			croak(error_string);
+		}
+#elif defined(HAVE_RTL_GENRANDOM)
+		int ret = SystemFunction036(data, wanted);
+		if (!ret) {
 			SvREFCNT_dec(RETVAL);
 			croak(error_string);
 		}

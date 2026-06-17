@@ -79,6 +79,22 @@ int main(void)
         return 0;
 }
 EOF
+	['Microsoft RtlGenRandom', 'RTL_GENRANDOM', {}, <<EOF ],
+#define WIN32_NO_STATUS
+#include <windows.h>
+#undef WIN32_NO_STATUS
+
+#include <winternl.h>
+
+BOOLEAN WINAPI SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength);
+
+int main(void)
+{
+        char buf[16];
+		SystemFunction036(buf, sizeof(buf));
+        return 0;
+}
+EOF
 	[ 'rdrandom64 in immintrin.h', 'RDRAND64', { extra_compiler_flags => [ '-mrdrnd' ] }, <<EOF ],
 #include <immintrin.h>
 
