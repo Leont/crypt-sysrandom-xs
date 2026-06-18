@@ -1,6 +1,7 @@
 Revision history for Crypt-SysRandom-XS
 
 {{$NEXT}}
+          - Remove winternl.h inclusion
 
 0.013     2026-06-18 01:43:35+02:00 Europe/Brussels (TRIAL RELEASE)
           - Add RtlGenRandom support on Windows

@@ -68,7 +68,6 @@ EOF
 #include <windows.h>
 #undef WIN32_NO_STATUS
 
-#include <winternl.h>
 #include <ntstatus.h>
 #include <bcrypt.h>
 
@@ -83,8 +82,6 @@ EOF
 #define WIN32_NO_STATUS
 #include <windows.h>
 #undef WIN32_NO_STATUS
-
-#include <winternl.h>
 
 BOOLEAN WINAPI SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength);
 
