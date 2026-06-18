@@ -15,9 +15,9 @@ my @possibilities = (
 
 int main(void)
 {
-        char buf[16];
-        int r = getrandom(buf, sizeof(buf), 0);
-        return 0;
+	char buf[16];
+	int r = getrandom(buf, sizeof(buf), 0);
+	return 0;
 }
 EOF
 	['getrandom in sys/syscall.h', 'SYSCALL_GETRANDOM', {}, <<EOF],
@@ -27,9 +27,9 @@ EOF
 
 int main(void)
 {
-        char buf[16];
-        int r = syscall(SYS_getrandom, buf, sizeof(buf), 0);
-        return 0;
+	char buf[16];
+	int r = syscall(SYS_getrandom, buf, sizeof(buf), 0);
+	return 0;
 }
 EOF
 	['arc4random in stdlib.h', 'STDLIB_ARC4RANDOM', {}, <<EOF ],
@@ -37,9 +37,9 @@ EOF
 
 int main(void)
 {
-        char buf[16];
-        arc4random_buf(buf, sizeof(buf));
-        return 0;
+	char buf[16];
+	arc4random_buf(buf, sizeof(buf));
+	return 0;
 }
 EOF
 	['arc4random in sys/random.h', 'SYS_RANDOM_ARC4RANDOM', {}, <<EOF ],
@@ -48,9 +48,9 @@ EOF
 
 int main(void)
 {
-        char buf[16];
-        arc4random_buf(buf, sizeof(buf));
-        return 0;
+	char buf[16];
+	arc4random_buf(buf, sizeof(buf));
+	return 0;
 }
 EOF
 	['arc4random in unistd.h', 'UNISTD_ARC4RANDOM', {}, <<EOF ],
@@ -58,9 +58,9 @@ EOF
 
 int main(void)
 {
-        char buf[16];
-        arc4random_buf(buf, sizeof(buf));
-        return 0;
+	char buf[16];
+	arc4random_buf(buf, sizeof(buf));
+	return 0;
 }
 EOF
 	['Microsoft BcryptGenRandom', 'BCRYPT_GENRANDOM', { libraries => ['Bcrypt'] }, <<EOF ],
@@ -74,9 +74,9 @@ EOF
 
 int main(void)
 {
-        char buf[16];
-        int r = BCryptGenRandom(NULL, buf, sizeof(buf), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
-        return 0;
+	char buf[16];
+	int r = BCryptGenRandom(NULL, buf, sizeof(buf), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+	return 0;
 }
 EOF
 	['Microsoft RtlGenRandom', 'RTL_GENRANDOM', {}, <<EOF ],
@@ -90,9 +90,9 @@ BOOLEAN WINAPI SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength);
 
 int main(void)
 {
-        char buf[16];
-		SystemFunction036(buf, sizeof(buf));
-        return 0;
+	char buf[16];
+	SystemFunction036(buf, sizeof(buf));
+	return 0;
 }
 EOF
 	[ 'rdrandom64 in immintrin.h', 'RDRAND64', { extra_compiler_flags => [ '-mrdrnd' ] }, <<EOF ],
